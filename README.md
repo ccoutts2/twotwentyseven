@@ -110,6 +110,8 @@ The [collection.json](collection.json) file contains product data in a structure
 ## Your Task
 Edit `src/sections/template.liquid` to build the product card as per the supplied designs. Focus on clean, semantic code that aligns with Shopify best practices and makes smart use of native features.
 
+**Important:** Keep your implementation within `template.liquid`. Do not attempt to use Shopify blocks, snippets, or split your code into multiple files - LiquidJS has limitations compared to full Shopify and doesn't support these features in this test environment.
+
 **Note:** The quantity selector and add to cart button don't need to be functional. If you have time, you may optionally implement JavaScript to make the quantity selector increment/decrement.
 
 You may also customize:
