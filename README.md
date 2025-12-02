@@ -103,8 +103,14 @@ The following Shopify-specific filters are **not available** in this test enviro
 
 For a complete list of Shopify Liquid filters, see the [Shopify Liquid documentation](https://shopify.dev/docs/api/liquid/filters).
 
+## Working with Product Data
+
+The [collection.json](collection.json) file contains product data in a structure that mirrors Shopify's collection object. You'll need to loop through `collection.products` in your Liquid template to render each product card. Refer to the JSON file to understand the available data fields and structure.
+
 ## Your Task
 Edit `src/sections/template.liquid` to build the product card as per the supplied designs. Focus on clean, semantic code that aligns with Shopify best practices and makes smart use of native features.
+
+**Note:** The quantity selector and add to cart button don't need to be functional. If you have time, you may optionally implement JavaScript to make the quantity selector increment/decrement.
 
 You may also customize:
 - `src/styles/main.css` - Add or modify CSS styles
