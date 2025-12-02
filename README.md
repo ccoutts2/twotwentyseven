@@ -4,7 +4,9 @@
 This test evaluates your ability to work with Shopify Liquid templates without requiring Shopify access. You'll build a multiple product cards using Liquid templating and JSON data.
 
 ## Prerequisites
-- Node.js 16+ installed
+- **Node.js 16+** installed ([Download Node.js](https://nodejs.org/))
+  - Check your version: `node --version`
+  - npm comes bundled with Node.js
 - Basic understanding of HTML/CSS
 - Familiarity with templating languages (helpful but not required)
 
