@@ -1,4 +1,184 @@
+{% assign products = collection.products %}
 
-{% for product in collection.products %}
-  {{ product | json }}
-{% endfor %}
+{% comment %} Checking that the collection.products exists and there is an array longer containing at least one item. {% endcomment %}
+{% if products and products.size > 0 %}
+  <main class="wrapper">
+    {% comment %} No header in design but including a visually hidden h1 for accessibility  {% endcomment %}
+    <h1 class="visually-hidden">{{ collection.title }}</h1>
+    <ul class="flex flex-col md:flex-row gap-6 items-stretch flex-wrap">
+      {% for product in collection.products %}
+        <li class="flex flex-1">
+          <article class="ProductCard" data-state="col-reversed">
+            <div class="ProductCard__wrapper">
+              <div class="Product">
+                {% assign best_seller = product.tags contains 'Best Seller' %}
+                <header>
+                  <h2 class="Product__title">{{ product.title }}</h2>
+                  {% if best_seller %}
+                    <span class="Product__tag">Bestseller</span>
+                  {% endif %}
+                </header>
+                <div class="Product__description">{{ product.content }}</div>
+                <div class="Product__pricing">
+                  <span class="Product__currentPrice">{{ product.price | money }}</span>
+                  {% if product.price < product.compare_at_price %}
+                    <div class="Product__comparePrices">
+                      <del class="Product__comparePrice" data-state="original"
+                        >Was {{ product.compare_at_price | money -}}
+                      </del>
+                      <span class="Product__comparePrice" data-state="discount"
+                        >Save {{ product.compare_at_price | minus: product.price | money -}}
+                      </span>
+                    </div>
+                  {% endif %}
+                </div>
+                <ul class="Product__features">
+                  {% comment %} Design only shows three, and collection.json only contains three, but including limit incase other products container a lot of properties. {% endcomment %}
+                  {% for metafield in product.metafields limit: 3 %}
+                    {% comment %} Don't want the excerpt to display. {% endcomment %}
+                    {% if metafield.key != 'product_excerpt' %}
+                      <li class="Product__feature">
+                        {% if metafield.key == 'protein_per_serving' %}
+                          <span>{{ metafield.value }} Protein</span>
+                        {% else %}
+                          <span class="relative left-1">{{ metafield.key | replace: '_', ' ' | capitalize }}</span>
+                        {% endif %}
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+                {% comment %} Form will throw an error as we don't have the api endpoint set up to handle adding to a cart. {% endcomment %}
+                <form class="ProductCard__actions" method="post" action="/cart/add">
+                  {% if product.available %}
+                    <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                    <input
+                      type="hidden"
+                      name="quantity"
+                      id="quantity-{{ product.variants.first.id }}"
+                      class="Product__quantityValue"
+                      value="1"
+                      step="{{ product.variants.first.quantity_rule.increment | default: 1}}"
+                      min="{{ product.variants.first.quantity_rule.min | default: 1}}"
+                      max="{{ product.variants.first.quantity_rule.max }}"
+                    >
+                    <fieldset class="ProductCard__action" data-variant="quantity">
+                      <legend class="visually-hidden">Adjust the quantity of product and add to cart actions.</legend>
+                      <button type="button" id="minus-quantity" class="ProductCard__quantityBtn">
+                        <span class="visually-hidden">Minus quantity of product.</span>
+                        <svg
+                          aria-hidden="true"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g clip-path="url(#clip0_2_418)">
+                            <path d="M5 11H19V13H5V11Z" fill="#09121F"/>
+                            </g>
+                            <defs>
+                              <clipPath id="clip0_2_418">
+                                <rect width="24" height="24" fill="white"/>
+                                </clipPath>
+                              </defs>
+                        </svg>
+                      </button>
+                      <span id="quantity">
+                        <span class="visually-hidden">Add quantity of {{ product.title }}</span>
+                        1
+                      </span>
+                      <button type="button" id="add-quantity" class="ProductCard__quantityBtn">
+                        <span class="visually-hidden">Add quantity of product.</span>
+                        <svg
+                          aria-hidden="true"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g clip-path="url(#clip0_2_420)">
+                            <path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z" fill="#09121F"/>
+                            </g>
+                            <defs>
+                              <clipPath id="clip0_2_420">
+                                <rect width="24" height="24" fill="white"/>
+                                </clipPath>
+                              </defs>
+                        </svg>
+                      </button>
+                    </fieldset>
+                    <div class="flex-3">
+                      {% comment %} Checking network and payload I can see the action submits the quantity and id of product. {% endcomment %}
+                      <button class="ProductCard__action" data-variant="cart-cta" type="submit">Add to Cart</button>
+                    </div>
+                  {% else %}
+                    {% comment %} Could render disabled + reduced opacity form actions (quantity + add to cart) with the text below. Not in figma so not a design choice for me to make. {% endcomment %}
+                    <p>Unfortunately this product is <strong>out of stock.</strong></p>
+                  {% endif %}
+                </form>
+              </div>
+
+              <div class="Product__gallery">
+                <div class="Product__viewport">
+                  {% for media in product.media %}
+                    {% if media.media_type == 'image' %}
+                      <figure class="Product__slide">
+                        {{
+                          media.preview_image.src
+                          | img_url
+                          | image_tag:
+                            alt: media.alt,
+                            width: media.preview_image.width,
+                            height: image.preview_image.height,
+                            class: 'Product__media'
+                        }}
+                      </figure>
+                    {% else %}
+                      {% comment %} image_size would be dynamic in reality {% endcomment %}
+                      {{ media | video_tag: image_size: '400x', class: 'Product__media' }}
+                    {% endif %}
+                  {% endfor %}
+                  <nav class="Product__galleryNav">
+                    {% for media in product.media %}
+                      {% comment %} Aria hidden for svgs set to true for accessibility, and span with visually hidden class added for description of button children. {% endcomment %}
+                      <button type="button">
+                        <span class="visually-hidden">Go to slide {{ forloop.index }}</span>
+                        {% if media.position == 1 %}
+                          <svg
+                            aria-hidden="true"
+                            width="16"
+                            height="6"
+                            viewBox="0 0 16 6"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <rect width="16" height="6" rx="3" fill="#09121F"/>
+                          </svg>
+
+                        {% else %}
+                          <svg
+                            aria-hidden="true"
+                            width="6"
+                            height="6"
+                            viewBox="0 0 6 6"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <circle cx="3" cy="3" r="3" fill="#09121F" fill-opacity="0.2"/>
+                          </svg>
+                        {% endif %}
+                      </button>
+                    {% endfor %}
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </article>
+        </li>
+      {% endfor %}
+    </ul>
+  </main>
+{% else %}
+  <p>There are no products to display.</p>
+{% endif %}

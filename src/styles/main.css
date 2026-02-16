@@ -1,1 +1,231 @@
 @import "tailwindcss";
+
+/* Globals */
+
+:root {
+    --primary-color: #09121F;
+    --price-original-bg-color: #EB00001A;
+    --price-discount-bg-color: #00920A1A;
+    --price-original-border-color: #EB0000;
+    --price-discount-border-color: #00920A;
+    --box-shadow-color: rgba(9, 18, 31, 0.2);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: "Radio Canada Big", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* Utilities */
+
+.wrapper {
+  margin-inline: auto;
+  max-width: 60rem;
+  padding: 2.5rem 1.5rem;
+}
+
+.visually-hidden {
+	clip-path: inset(50%);
+	clip: rect(0 0 0 0);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+
+/* Product Card styling */
+
+.ProductCard {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    
+}
+
+.ProductCard__wrapper {
+    display: flex;
+    flex: 1;   
+    flex-direction: column;
+
+}
+
+.ProductCard[data-state="col-reversed"] .ProductCard__wrapper{
+    flex-direction: column-reverse;
+}
+
+.Product {
+    border-radius: 0 0 0.75rem 0.75rem;
+    box-shadow: 0 0 2px 0 var(--box-shadow-color);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 0.5rem;
+    padding: 1.5rem 1.5rem 1rem;
+}
+
+.Product__title {
+    font-weight: 600;
+}
+
+.Product__tag {
+    background-color: var(--primary-color);
+    border-radius: 6.25rem;
+    color: #ffffff;
+    font-size: 0.75rem;
+    left: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    position: absolute;
+    top: 0.5rem;
+    z-index: 100;
+}
+
+.Product__description {
+    font-size: 0.875rem;
+}
+
+.Product__pricing {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.Product__currentPrice {
+    font-size: 1.25rem;
+}
+
+.Product__comparePrices {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.Product__comparePrice {
+    background-color: var(--primary-color);
+    border-radius: 6.25rem;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+
+     &[data-state='original'] {
+        background-color: var(--price-original-bg-color);
+        border: 1px solid var(--price-original-border-color);
+        color: var(--primary-color);
+    }
+
+    &[data-state='discount'] {
+        background-color: var(--price-discount-bg-color);
+        border: 1px solid var(--price-discount-border-color);
+        color: var(--primary-color);
+    }
+}
+
+.Product__features {
+    display: flex;
+    font-size: 0.75rem;
+    gap: 1.5rem;
+}
+
+.Product__feature:not(:first-of-type) {
+    display: list-item;
+    list-style-type: disc;  
+    text-transform: capitalize;
+}
+
+.Product__gallery {
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+    border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.Product__viewport {
+	-webkit-overflow-scrolling: touch;
+	display: flex;
+	gap: 0.75rem;   
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+}
+
+.Product__slide {
+	flex: 0 0 100%;
+	overflow: hidden;
+	position: relative;
+	scroll-snap-align: center;
+    aspect-ratio: 1/1;
+}
+
+.Product__media {
+	object-fit: cover;
+	position: absolute;
+	width: 100%;
+    height: 100%;
+}
+
+.Product__galleryNav {
+    bottom: 0.5rem;
+    display: flex;
+    gap: 0.25rem;
+    left: 50%;
+    position: absolute;
+    transform: translateX(-50%);
+}
+
+.ProductCard__actions {
+    align-items: center;
+    bottom: 0;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: auto; 
+    padding-top: 0.5rem;
+    position: relative;
+    width: 100%;
+    width: 100%;
+}
+
+.ProductCard__action {
+    align-items: center;
+    border-radius: 0.75rem;
+    border: 1px solid var( --primary-color);
+    display: flex;
+    justify-content: center;
+    padding: 0.9rem 0.5rem;
+    width: 100%;
+    position: relative;
+
+    button {
+        cursor: pointer;
+    }
+
+    #add-quantity {
+        right: 0.5rem;
+    }
+
+    #minus-quantity {
+        left: 0.5rem;
+    }
+
+    &[data-variant="quantity"] {
+        background-color: transparent;
+        max-width: 6.16rem;
+        text-align: center;
+    }
+
+    &[data-variant="cart-cta"] {
+        cursor: pointer;
+        background-color: var(--primary-color);
+        color: #ffffff;
+    }
+}
+
+.ProductCard__quantityBtn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
